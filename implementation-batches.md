@@ -56,7 +56,7 @@ Each IB MUST target **one concern**. Reviewers should answer one question per di
 
 | Concern | What changes | What must NOT change |
 |---------|--------------|----------------------|
-| **Foundation** | Shared fixtures/helpers in support file; first adopter **wiring** in one reference file | Test/subtest names; assertion style beyond what wiring requires |
+| **Foundation** | Shared fixtures/helpers in support file **when ≥2 consumers**; first adopter **wiring** in one reference file | Test/subtest names; assertion style beyond what wiring requires; helpers with only one consumer in support file |
 | **Naming** | Outer `Test*` renames; recurring subtest string normalization (project vocabulary) | Fake-client construction, helpers, assertion idioms, test logic |
 | **Wiring** | Shared helper adoption, client-builder dedup, assertion standardization, setup dedup | Outer/subtest names (done in Naming IB for that file) |
 | **Coverage** | New subtests, expanded tables, new scenarios (US3) | Renames or unrelated refactors |
@@ -100,8 +100,8 @@ Never combine Naming + Wiring or Wiring + Coverage in one `/speckit-implement` p
 - Default: one primary file per IB (~30–150 lines changed).
 - Exception: **atomic cross-file changes** (e.g. move shared builders from file A to
   fixtures + update callers B and C) = one IB, 2–3 files, one logical move.
-- Exception: **foundation IB01** = shared support file **plus** first adopter wiring
-  (defs and call sites together; **no renames** in IB01).
+- Exception: **IB01** = first adopter **wiring** in one file (local helpers until a second file needs them; **no renames** in IB01).
+- **Locality**: define helpers in the consumer file until ≥2 files use them; promote to support file in the IB that adds the second consumer (move + update all call sites in same diff).
 
 ### Do not split too fine (within a concern)
 
@@ -120,11 +120,10 @@ Avoid separate IBs for:
 
 Typical order:
 
-1. **IB01** — shared helpers in support file **+ first adopter wiring** (defs and call sites
-   together; e.g. `fixtures_test.go` + reference unit test file; **no renames**)
+1. **IB01** — first adopter **wiring** in one file (local helpers; e.g. reference unit test file; **no renames**)
 2. **IB02** — **Naming** for first adopter (if applicable) OR atomic fixture relocation
 3. **IB03** — atomic fixture or module relocation (move defs + update **all** importers)
-4. **IB04+** — per-unit **Naming → Wiring → Coverage** IBs
+4. **IB04+** — per-unit **Naming → Wiring → Coverage** IBs; promote local helpers to support file when second consumer wires in
 
 Adjust numbering to fit the feature; keep concern order strict.
 
@@ -136,13 +135,16 @@ When an IB introduces or changes functions, task bullets MUST separate **Define*
 **Call sites** (or use explicit “replace every `X` call site” language):
 
 ```markdown
-## IB01 — Foundation + foo wiring
+## IB01 — foo wiring
 
-- [ ] T001 Add `newFakeClient` to path/fixtures_test.go and adopt in path/foo_test.go in the **same IB**:
-  - **Define** in `fixtures_test.go`: `newFakeClient`, …
-  - **Define** in `foo_test.go` (local until reused by ≥2 files): `cappWithDeletionTimestamp`, …
-  - **Wiring** in `foo_test.go`: rewrite `newFooClient` to delegate; replace inline builders
-  - **Out of scope**: outer `Test*` renames (IB02); subtest string changes (IB02)
+- [ ] T001 Adopt wiring in path/foo_test.go:
+  - **Define** in `foo_test.go` (local until reused by ≥2 files): `newFakeClient`, …
+  - **Wiring**: rewrite `newFooClient` to delegate; replace inline builders
+  - **Out of scope**: renames (IB02); moving helpers to support file (IB that adds second consumer)
+
+## IB05 — bar wiring (promotes shared helper)
+
+- [ ] T006 Move `newFakeClient` from `foo_test.go` to `fixtures_test.go`; update foo + bar call sites in the **same IB**
 
 ## IB02 — foo naming
 
@@ -200,7 +202,7 @@ When generating tasks.md:
 
 - [ ] Every IB produces a reviewable code diff (except preflight/postflight)
 - [ ] **Func-def rule**: no IB with new/moved/renamed/changed functions without call-site updates in the same IB
-- [ ] **IB01** pairs shared helpers with first adopter **wiring** (not helpers-only; **no renames** in IB01)
+- [ ] **IB01** is first adopter **wiring** only (local helpers; not support-file helpers with one consumer)
 - [ ] **Naming** and **Wiring** are separate IBs when both apply to the same file
 - [ ] Relocation IBs list moved symbols and **all** importer files
 - [ ] **Coverage** split from **Naming** and **Wiring** for any file that gains new tests or subtests
@@ -236,11 +238,11 @@ Agent MUST:
 
 | IB | Concern | Files | Theme |
 |----|---------|-------|-------|
-| IB01 | foundation + wiring | `fixtures_test.go`, `dnsrecord_test.go` | `newFakeClient` + dnsrecord wiring (**no renames**) |
+| IB01 | wiring | `dnsrecord_test.go` | Local `newFakeClient` + dnsrecord wiring (**no renames**) |
 | IB02 | naming | `dnsrecord_test.go` | dnsrecord outer + subtest vocabulary only |
 | IB03 | foundation | fixtures + 2 callers | Relocate shared builders + update all call sites |
 | IB04 | naming | `certificate_test.go` | Subtest vocabulary only |
-| IB05 | wiring | `certificate_test.go` | `newFakeClient`, dedup, doc comment |
+| IB05 | wiring | `fixtures_test.go`, `certificate_test.go`, `dnsrecord_test.go` | Promote `newFakeClient` to fixtures + certificate wiring |
 | IB06 | naming | `bar_test.go` | Outer + subtest renames |
 | IB07 | wiring | `bar_test.go` | Client construction, dedup |
 | IB08 | coverage | `bar_test.go` | New subtests only |
