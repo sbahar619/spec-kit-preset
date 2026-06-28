@@ -93,6 +93,9 @@ commit unless explicitly requested.
 - `/speckit-tasks` MUST group work into **implementation batches (IB01, IB02, …)**
   sized for a single review and commit. Each IB MUST produce a concrete code diff
   except optional preflight/postflight steps (baseline, final validation).
+- If an IB adds, moves, renames, or changes a function signature, that IB MUST
+  also update every call site in the same diff. Do not land definitions without
+  consumers in the same batch.
 - Behavior-preserving work (refactor, rename, dedup) MUST be in separate IBs from
   behavior-adding work (new tests, new features) when both touch the same files;
   refactor IBs come first. One `/speckit-implement` request MUST target one IB only.
@@ -107,4 +110,4 @@ version bump, and sync of dependent templates. All plans and reviews MUST verify
 compliance with MUST principles. Complexity that violates minimal-change or
 simplicity principles MUST be documented with rejected simpler alternatives.
 
-**Version**: 1.3.0 | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
+**Version**: 1.4.0 | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
