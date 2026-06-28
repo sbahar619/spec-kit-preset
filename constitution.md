@@ -29,7 +29,24 @@ duplicate logic, bypass abstractions, or reach into unrelated internals.
 Before hardcoding enums, formats, limits, or well-known strings, check stdlib
 and existing dependencies for exported constants.
 
-### V. High-Signal Testing
+### V. Test-First (Preferred)
+
+TDD is the default for project-owned logic that introduces or changes behavior:
+write the test first, confirm it fails for the right reason, then implement until
+it passes (Red-Green-Refactor). Bug fixes SHOULD follow the same pattern with a
+regression test first.
+
+TDD is not required for small, low-risk tasks where test-first adds no signal,
+including:
+
+- Test-only edits (refactoring tests, renaming helpers, tightening assertions)
+- Cosmetic or behavior-preserving refactors with existing coverage
+- Documentation, configuration, or chore tasks with no observable behavior change
+
+When TDD is skipped on exempt tasks, existing tests MUST still pass and
+Principle VIII validation still applies.
+
+### VI. High-Signal Testing
 
 Add tests only when they justify their cost: new coverage, a distinct behavior,
 edge case, or regression lock. Test project-owned logic, contracts, and wiring —
@@ -37,7 +54,7 @@ not stdlib, framework, or third-party behavior. One clear behavior per test;
 shortest setup and assertions needed. Do not duplicate assertions already covered
 elsewhere in the suite.
 
-### VI. Test Structure & Naming
+### VII. Test Structure & Naming
 
 Tests MUST describe observable behavior and contracts, not internals. Put
 scenario wording in nested or sub-test names, not in overloaded top-level test
@@ -46,7 +63,7 @@ same shape; use separate sub-tests when setup or assertions differ. Prefer
 fail-fast checks so later asserts do not run on bad state. Shared fixtures
 belong in dedicated test helper files, marked as helpers per language convention.
 
-### VII. Validation Before Done
+### VIII. Validation Before Done
 
 After code changes, review the diff for duplication and scope creep, then run
 lint and the affected tests (repo Makefile or CI targets when available). Do not
@@ -67,6 +84,8 @@ commit unless explicitly requested.
   `/speckit-implement`) MUST honor this constitution.
 - Plans MUST pass the Constitution Check gates before Phase 0 research and again
   after Phase 1 design.
+- Tasks that add or change behavior SHOULD order test tasks before implementation
+  (Red-Green-Refactor). Exempt tasks (Principle V) omit test-first ordering.
 - Tasks MUST not introduce constitution violations; justify any exception in the
   plan Complexity Tracking table.
 - Implementation MUST not expand scope beyond approved tasks without a spec/plan
@@ -80,4 +99,4 @@ version bump, and sync of dependent templates. All plans and reviews MUST verify
 compliance with MUST principles. Complexity that violates minimal-change or
 simplicity principles MUST be documented with rejected simpler alternatives.
 
-**Version**: 1.0.0 | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
+**Version**: 1.2.0 | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
