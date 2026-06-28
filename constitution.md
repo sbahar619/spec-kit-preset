@@ -96,9 +96,13 @@ commit unless explicitly requested.
 - If an IB adds, moves, renames, or changes a function signature, that IB MUST
   also update every call site in the same diff. Do not land definitions without
   consumers in the same batch.
-- Behavior-preserving work (refactor, rename, dedup) MUST be in separate IBs from
-  behavior-adding work (new tests, new features) when both touch the same files;
-  refactor IBs come first. One `/speckit-implement` request MUST target one IB only.
+- Behavior-preserving work MUST be split by concern when multiple apply to the same
+  files: **naming** (labels only), **wiring** (helpers, dedup, assertions — no renames),
+  and **coverage** (new tests/scenarios). When both naming and wiring touch a file,
+  **naming IBs come before wiring IBs**. Behavior-adding work (new tests, new features)
+  MUST be in separate IBs from wiring when both touch the same files; wiring IBs come
+  before coverage IBs. One `/speckit-implement` request MUST target one IB and one
+  concern only.
 - Detailed batch rules live in `implementation-batches.md` (companion to this
   constitution); projects SHOULD copy it into `.specify/memory/` or `.specify/templates/`.
 
@@ -110,4 +114,4 @@ version bump, and sync of dependent templates. All plans and reviews MUST verify
 compliance with MUST principles. Complexity that violates minimal-change or
 simplicity principles MUST be documented with rejected simpler alternatives.
 
-**Version**: 1.4.0 | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
+**Version**: 1.5.0 | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]

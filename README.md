@@ -6,8 +6,8 @@ Shared Spec Kit constitution and task-batch guidance for reuse across projects.
 
 | File | Purpose |
 |------|---------|
-| `constitution.md` | Core principles and workflow MUSTs (v1.4.0+) |
-| `implementation-batches.md` | How `/speckit-tasks` splits IB01+ for review-sized commits; func-def + call-site rule |
+| `constitution.md` | Core principles and workflow MUSTs (v1.5.0+) |
+| `implementation-batches.md` | How `/speckit-tasks` splits IB01+ by concern (Foundation / Naming / Wiring / Coverage); func-def + call-site rule |
 
 ## Use in a project
 
@@ -44,7 +44,7 @@ Or embed the “Implementation Batches” section from `implementation-batches.m
 
 | Document | Level |
 |----------|--------|
-| **constitution** | MUST principles — review-sized IBs, func-def + call-site rule, refactor/coverage split |
-| **implementation-batches** | HOW for prompts — preflight/IB/postflight tables, define+call-site pairing, checklists, examples |
+| **constitution** | MUST principles — review-sized IBs, func-def + call-site rule, naming/wiring/coverage separation |
+| **implementation-batches** | HOW for prompts — concern types, preflight/IB/postflight tables, define+wiring+out-of-scope pairing, checklists, examples |
 
 Keep detailed split rules out of the constitution; reference the companion doc instead.

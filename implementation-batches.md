@@ -4,8 +4,8 @@
 small, logic-wise reviewable diff suitable for one commit.
 
 **Authority**: Expands constitution **Development Workflow** (review-sized batches,
-func-def + call-site rule). Constitution states the MUST; this document states the HOW for
-task generation.
+func-def + call-site rule, separation of concerns). Constitution states the MUST; this
+document states the HOW for task generation.
 
 ---
 
@@ -35,6 +35,7 @@ that IB **MUST also update every call site** in the same diff.
 | Change signature | Every caller updated |
 | Rewrite wrapper to delegate | Wrapper body changed; callers may stay on wrapper name |
 | Rename test function (`Test*`) | No in-package call sites (discovered by test runner) |
+| Rename subtest string (`t.Run("…")`) | No in-package call sites |
 
 **Do not**:
 
@@ -47,52 +48,85 @@ Progress status to `pending` in `tasks.md`.
 
 ---
 
-## Split principles (smallest logical review unit)
+## Separation of concerns (split principles)
 
-### 1. One review theme per IB
+Each IB MUST target **one concern**. Reviewers should answer one question per diff.
+
+### Concern types
+
+| Concern | What changes | What must NOT change |
+|---------|--------------|----------------------|
+| **Foundation** | Shared fixtures/helpers in support file; first adopter **wiring** in one reference file | Test/subtest names; assertion style beyond what wiring requires |
+| **Naming** | Outer `Test*` renames; recurring subtest string normalization (project vocabulary) | Fake-client construction, helpers, assertion idioms, test logic |
+| **Wiring** | Shared helper adoption, client-builder dedup, assertion standardization, setup dedup | Outer/subtest names (done in Naming IB for that file) |
+| **Coverage** | New subtests, expanded tables, new scenarios (US3) | Renames or unrelated refactors |
+
+### Order per file
+
+When a file needs more than one concern, generate IBs in this order:
+
+```text
+Foundation (once, package-wide) → Naming → Wiring → Coverage
+```
+
+- **Naming before Wiring** for the same file — never combine in one IB.
+- **Wiring before Coverage** for the same file — never combine in one IB.
+- **Foundation IB01** = support file + first adopter **wiring only** (no renames in IB01).
+- **Foundation IB02** (typical) = atomic fixture relocation (move defs + update **all** importers).
+
+### One review theme per IB
 
 Each IB answers one reviewer question:
 
-- “Is shared setup correct **and wired in**?” (foundation IB)
-- “Same behavior, cleaner structure?” (**refactor IB**)
-- “New behavior covered?” (**coverage IB**)
+- “Is shared setup correct **and wired in**?” (**Foundation** / wiring portion)
+- “Are test labels consistent?” (**Naming**)
+- “Same behavior, cleaner structure?” (**Wiring**)
+- “New behavior covered?” (**Coverage**)
 
-### 2. Separate refactor from coverage when both touch the same file
+### Refactor vs coverage (still applies)
 
 | IB type | User-story mapping | Allowed changes |
 |---------|-------------------|-----------------|
-| **Refactor IB** | US1 + US2 (structure, dedup, naming) | Behavior-preserving only |
-| **Coverage IB** | US3 (new tests, expanded tables) | Add assertions/scenarios only |
-| **Single IB** | US1 + US2 (+ tiny US3 doc comment) | When no new tests/subtests |
+| **Naming IB** | US1 | Rename-only |
+| **Wiring IB** | US2 | Behavior-preserving structure/dedup only |
+| **Coverage IB** | US3 | Add assertions/scenarios only |
+| **Single IB** | US1 + US2 (+ tiny US3 doc comment) | When file has no split-worthy naming or coverage work |
 
-**Rule**: For the same file, generate **refactor IB before coverage IB** (e.g. IB05 then
-IB06). Never combine both in one `/speckit-implement` prompt.
+**Rule**: For the same file, generate **Naming → Wiring → Coverage** when multiple apply.
+Never combine Naming + Wiring or Wiring + Coverage in one `/speckit-implement` prompt.
 
-### 3. Prefer one file per IB
+### Prefer one file per IB
 
 - Default: one primary file per IB (~30–150 lines changed).
 - Exception: **atomic cross-file changes** (e.g. move shared builders from file A to
   fixtures + update callers B and C) = one IB, 2–3 files, one logical move.
-- Exception: **foundation IB01** = shared support file **plus** first adopter file so
-  new helpers ship with call sites in one reviewable diff.
+- Exception: **foundation IB01** = shared support file **plus** first adopter wiring
+  (defs and call sites together; **no renames** in IB01).
 
-### 4. Do not split too fine
+### Do not split too fine (within a concern)
 
 Avoid separate IBs for:
 
-- Rename vs subtest vocabulary vs NotFound style in the same file (one refactor IB)
-- Client wrapper dedup vs finalizer dedup in the same file (one refactor IB)
-- Each helper function in fixtures (one foundation IB — **with** first adopter)
+- Client wrapper dedup vs finalizer dedup in the same file (one **Wiring** IB)
+- Each helper function in fixtures (one **Foundation** IB — **with** first adopter wiring)
 - Helper definition vs first usage (must be same IB per func-def rule)
 
-### 5. Foundation before vertical slices
+**Do** split across IBs:
+
+- Outer/subtest renames (**Naming**) vs helper adoption and dedup (**Wiring**)
+- Refactor (**Naming** + **Wiring**) vs new subtests (**Coverage**)
+
+### Foundation before vertical slices
 
 Typical order:
 
-1. **IB01** — shared helpers in support file **+ first adopter** (defs and call sites
-   together; e.g. `fixtures_test.go` + reference unit test file)
-2. **IB02** — atomic fixture or module relocation (move defs + update **all** importers)
-3. **IB03+** — per-unit refactor and coverage IBs
+1. **IB01** — shared helpers in support file **+ first adopter wiring** (defs and call sites
+   together; e.g. `fixtures_test.go` + reference unit test file; **no renames**)
+2. **IB02** — **Naming** for first adopter (if applicable) OR atomic fixture relocation
+3. **IB03** — atomic fixture or module relocation (move defs + update **all** importers)
+4. **IB04+** — per-unit **Naming → Wiring → Coverage** IBs
+
+Adjust numbering to fit the feature; keep concern order strict.
 
 ---
 
@@ -102,16 +136,29 @@ When an IB introduces or changes functions, task bullets MUST separate **Define*
 **Call sites** (or use explicit “replace every `X` call site” language):
 
 ```markdown
-- [ ] T001 Add helpers to path/fixtures_test.go and adopt in path/foo_test.go in the **same IB**:
-  - **Define** in `fixtures_test.go`: `newFakeClient`, `requireNotFound`, …
-  - **Call sites** in `foo_test.go`: rewrite `newFooClient` to delegate; replace inline builders
+## IB01 — Foundation + foo wiring
+
+- [ ] T001 Add `newFakeClient` to path/fixtures_test.go and adopt in path/foo_test.go in the **same IB**:
+  - **Define** in `fixtures_test.go`: `newFakeClient`, …
+  - **Define** in `foo_test.go` (local until reused by ≥2 files): `cappWithDeletionTimestamp`, …
+  - **Wiring** in `foo_test.go`: rewrite `newFooClient` to delegate; replace inline builders
+  - **Out of scope**: outer `Test*` renames (IB02); subtest string changes (IB02)
+
+## IB02 — foo naming
+
+- [ ] T002 [US1] Rename tests in `foo_test.go` only:
+  - Outer tests per naming convention
+  - Recurring subtest strings per vocabulary
+  - **Out of scope**: helpers, fake-client wiring, assertions, test logic
 ```
 
-For refactor IBs without new defs, require updating **every** call site of the pattern
+For **Wiring** IBs without new defs, require updating **every** call site of the pattern
 being replaced (not only a named wrapper):
 
 - “Replace **every** `fake.NewClientBuilder` call site with `newFakeClient(…)`”
 - “Rewrite `newBarClient` to delegate to `newFakeClient`; replace any inline builders”
+
+For **Naming** IBs, require explicit **Out of scope** lines forbidding wiring changes.
 
 ---
 
@@ -119,14 +166,15 @@ being replaced (not only a named wrapper):
 
 Generated `tasks.md` MUST include:
 
-1. **How to use** — table of Preflight / IB / Postflight; **func-def + call-site rule**
-2. **Implementation Batches table** — IB | Type | File(s) | Review theme
+1. **How to use** — table of Preflight / IB / Postflight; **func-def + call-site rule**;
+   **Split principle** table (Foundation / Naming / Wiring / Coverage)
+2. **Implementation Batches table** — IB | Concern | File(s) | Review theme
 3. **Progress** (optional but recommended) — IB status; `Next: IBxx`
-4. **Per-IB task blocks** — checklist items with exact paths; **Define** / **Call sites**
-   where applicable; state “Do **not** …” for out-of-scope work in that IB
-5. **Refactor checklist** and **Coverage checklist** (when feature has both)
-6. **Dependencies** — strict order; refactor→coverage pairs
-7. **`/speckit-implement` prompts** — one IB per request; examples
+4. **Per-IB task blocks** — checklist items with exact paths; **Define** / **Wiring** /
+   **Out of scope** where applicable; state “Do **not** …” for out-of-scope work
+5. **Naming checklist**, **Wiring checklist**, and **Coverage checklist** (when feature has them)
+6. **Dependencies** — strict order; Naming→Wiring→Coverage pairs per file
+7. **`/speckit-implement` prompts** — one IB per request; examples; warn against combining concerns
 
 Task IDs (T001, T002, …) map to IBs. Multiple tasks per IB are allowed when they are
 one atomic change (e.g. move + update call sites).
@@ -137,9 +185,9 @@ one atomic change (e.g. move + update call sites).
 
 | Spec priority | Typical IB content |
 |---------------|-------------------|
-| P1 — layout, naming, conventions | Refactor IBs |
-| P2 — shared fixtures, dedup | Foundation IBs + refactor IBs |
-| P3 — coverage gaps, new scenarios | Coverage IBs (after refactor IB for same file) |
+| P1 — layout, naming, conventions | **Naming** IBs |
+| P2 — shared fixtures, dedup, assertion style | **Foundation** + **Wiring** IBs |
+| P3 — coverage gaps, new scenarios | **Coverage** IBs (after Naming + Wiring for same file) |
 
 User story phases in tasks.md are orthogonal to IBs: IBs are the **commit/review** axis;
 story labels ([US1], [US2], [US3]) stay on individual tasks inside an IB.
@@ -152,15 +200,17 @@ When generating tasks.md:
 
 - [ ] Every IB produces a reviewable code diff (except preflight/postflight)
 - [ ] **Func-def rule**: no IB with new/moved/renamed/changed functions without call-site updates in the same IB
-- [ ] **IB01** pairs shared helpers with first adopter (not helpers-only)
+- [ ] **IB01** pairs shared helpers with first adopter **wiring** (not helpers-only; **no renames** in IB01)
+- [ ] **Naming** and **Wiring** are separate IBs when both apply to the same file
 - [ ] Relocation IBs list moved symbols and **all** importer files
-- [ ] Refactor and coverage split for any file that gains new tests or subtests
-- [ ] Foundation IBs come before per-file IBs
-- [ ] IB table lists review theme in plain language
+- [ ] **Coverage** split from **Naming** and **Wiring** for any file that gains new tests or subtests
+- [ ] Foundation IBs come before per-file Naming/Wiring IBs
+- [ ] IB table lists **Concern** column and review theme in plain language
 - [ ] MVP path documented (e.g. defer coverage IBs)
 - [ ] No multi-file IBs except atomic relocation/setup or foundation IB01
-- [ ] Refactor tasks name every call-site pattern to replace (wrappers **and** inline usage)
-- [ ] Explicit “implement IBxx” examples; warn against combining refactor+coverage IBs
+- [ ] Wiring tasks name every call-site pattern to replace (wrappers **and** inline usage)
+- [ ] Naming tasks include **Out of scope** forbidding wiring changes
+- [ ] Explicit “implement IBxx” examples; warn against combining Naming+Wiring or Wiring+Coverage
 - [ ] Notes: never commit defs without call sites in the same IB
 
 ---
@@ -175,7 +225,7 @@ implement IB01
 
 Agent MUST:
 
-1. Complete only that IB’s tasks (including all call-site updates for any defs changed)
+1. Complete only that IB’s tasks (respect **Out of scope** — do not apply later concerns)
 2. Run affected tests
 3. Stop for user review/commit before next IB
 4. Mark IB tasks complete only after user confirms; on revert, uncheck tasks and update Progress
@@ -184,21 +234,34 @@ Agent MUST:
 
 ## Example (test refactor feature)
 
-| IB | Type | Files | Theme |
-|----|------|-------|-------|
-| IB01 | foundation | `fixtures_test.go`, `dnsrecord_test.go` | Shared helpers **+ first adopter** |
-| IB02 | foundation | fixtures + 2 callers | Relocate shared builders + update all call sites |
-| IB03 | single | `certificate_test.go` | Refactor + doc comment |
-| IB04 | single | `domainmapping_test.go` | Refactor only |
-| IB05 | refactor | `bar_test.go` | Rename, dedup, replace all client construction call sites |
-| IB06 | coverage | `bar_test.go` | New subtests only |
+| IB | Concern | Files | Theme |
+|----|---------|-------|-------|
+| IB01 | foundation + wiring | `fixtures_test.go`, `dnsrecord_test.go` | `newFakeClient` + dnsrecord wiring (**no renames**) |
+| IB02 | naming | `dnsrecord_test.go` | dnsrecord outer + subtest vocabulary only |
+| IB03 | foundation | fixtures + 2 callers | Relocate shared builders + update all call sites |
+| IB04 | naming | `certificate_test.go` | Subtest vocabulary only |
+| IB05 | wiring | `certificate_test.go` | `newFakeClient`, dedup, doc comment |
+| IB06 | naming | `bar_test.go` | Outer + subtest renames |
+| IB07 | wiring | `bar_test.go` | Client construction, dedup |
+| IB08 | coverage | `bar_test.go` | New subtests only |
 
 **Wrong** (violates func-def rule):
 
 | IB | Files | Problem |
 |----|-------|---------|
 | IB01 | `fixtures_test.go` only | Helpers defined with no consumers until IB03 |
-| IB02 | move builders only | Moved defs without updating importers |
+
+**Wrong** (violates separation of concerns):
+
+| IB | Files | Problem |
+|----|-------|---------|
+| IB01 | fixtures + dnsrecord | Wiring **and** test/subtest renames in same IB |
+| IB05 | `bar_test.go` | Naming + wiring + new subtests in one IB |
+
+**Right** (retroactive split after combined IB01):
+
+If wiring and naming landed together, revert naming to match IB01 scope, mark Naming IB
+pending, and apply renames in the dedicated Naming IB.
 
 ---
 
@@ -211,4 +274,4 @@ After editing this file in spec-kit-preset:
 3. Optionally add to `speckit-tasks` skill: “Read implementation-batches.md when generating tasks”
 4. Optionally embed summary in `.specify/templates/tasks-template.md` under Organization
 
-**Version**: 1.1.0 | **Companion to constitution**: 1.4.0+
+**Version**: 1.2.0 | **Companion to constitution**: 1.5.0+
