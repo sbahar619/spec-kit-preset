@@ -90,6 +90,14 @@ commit unless explicitly requested.
   plan Complexity Tracking table.
 - Implementation MUST not expand scope beyond approved tasks without a spec/plan
   update.
+- `/speckit-tasks` MUST group work into **implementation batches (IB01, IB02, …)**
+  sized for a single review and commit. Each IB MUST produce a concrete code diff
+  except optional preflight/postflight steps (baseline, final validation).
+- Behavior-preserving work (refactor, rename, dedup) MUST be in separate IBs from
+  behavior-adding work (new tests, new features) when both touch the same files;
+  refactor IBs come first. One `/speckit-implement` request MUST target one IB only.
+- Detailed batch rules live in `implementation-batches.md` (companion to this
+  constitution); projects SHOULD copy it into `.specify/memory/` or `.specify/templates/`.
 
 ## Governance
 
@@ -99,4 +107,4 @@ version bump, and sync of dependent templates. All plans and reviews MUST verify
 compliance with MUST principles. Complexity that violates minimal-change or
 simplicity principles MUST be documented with rejected simpler alternatives.
 
-**Version**: 1.2.0 | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
+**Version**: 1.3.0 | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
