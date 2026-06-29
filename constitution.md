@@ -94,8 +94,9 @@ commit unless explicitly requested.
   sized for a single review and commit. Each IB MUST produce a concrete code diff
   except optional preflight/postflight steps (baseline, final validation).
 - If an IB adds, moves, renames, or changes a function signature, that IB MUST
-  also update every call site in the same diff. Do not land definitions without
-  consumers in the same batch.
+  also update every **in-scope** call site in the same diff. Do not land definitions
+  without consumers in the same batch. Partial wiring (one consumer while others
+  remain on the old pattern) is forbidden unless tasks explicitly scope a single file.
 - Behavior-preserving work MUST be split by concern when multiple apply to the same
   files: **naming** (labels only), **wiring** (helpers, dedup, assertions — no renames),
   and **coverage** (new tests/scenarios). When both naming and wiring touch a file,
@@ -103,8 +104,11 @@ commit unless explicitly requested.
   MUST be in separate IBs from wiring when both touch the same files; wiring IBs come
   before coverage IBs. One `/speckit-implement` request MUST target one IB and one
   concern only.
-- Detailed batch rules live in `implementation-batches.md` (companion to this
-  constitution); projects SHOULD copy it into `.specify/memory/` or `.specify/templates/`.
+- Spec Kit workflow SHOULD run `/speckit-analyze` after `/speckit-tasks` and before
+  the first `/speckit-implement` to catch IB scope, wiring completeness, and concern-mixing issues.
+- Detailed batch rules (consumer inventory, wiring completeness, matrix-audit) live
+  in `implementation-batches.md` (companion to this constitution); projects SHOULD
+  copy it into `.specify/memory/` or `.specify/templates/`.
 
 ## Governance
 
@@ -114,4 +118,4 @@ version bump, and sync of dependent templates. All plans and reviews MUST verify
 compliance with MUST principles. Complexity that violates minimal-change or
 simplicity principles MUST be documented with rejected simpler alternatives.
 
-**Version**: 1.5.0 | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
+**Version**: 1.6.0 | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
