@@ -67,7 +67,9 @@ belong in dedicated test helper files, marked as helpers per language convention
 
 After code changes, review the diff for duplication and scope creep, then run
 lint and the affected tests (repo Makefile or CI targets when available). Do not
-commit unless explicitly requested.
+commit unless explicitly requested. Local validation uses unit and integration
+tests only. End-to-end tests require live infrastructure and run in CI; do not
+run them locally unless there is an explicit, task-specific reason to do so.
 
 ## Additional Constraints
 
