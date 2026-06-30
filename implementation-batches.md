@@ -95,6 +95,15 @@ Generated `tasks.md` MUST include:
 5. **Dependencies** — concern order; removal before coverage when applicable
 6. **`/speckit-implement` prompts** — one IB per request
 7. **Gates** in quickstart.md when applicable
+8. **IB Traceability table** — one row per IB with markdown links to `spec.md` anchors:
+
+   | IB | User Stories | Functional Requirements | Success Criteria |
+   |----|-------------|------------------------|-----------------|
+   | **IBxx** | [USn — Title](spec.md#anchor) | [FR-nnn](spec.md#functional-requirements) · … | [SC-nnn](spec.md#measurable-outcomes) … |
+
+   - Link targets: `spec.md#user-story-N-...`, `spec.md#functional-requirements`, `spec.md#measurable-outcomes`
+   - Each cell lists every US / FR / SC the IB directly advances, separated by ` · `
+   - Place this table after the existing User Story Coverage table
 
 **Per-IB example**:
 
@@ -118,6 +127,7 @@ Generated `tasks.md` MUST include:
 - [ ] Relocation = move + all importers + remove old defs
 - [ ] Coverage: matrix-audit; no blind adds; no mix with naming/wiring/removal
 - [ ] Recommend `/speckit-analyze` after tasks, before first implement
+- [ ] IB Traceability table present: one row per IB; every US/FR/SC linked to `spec.md` anchors
 
 ---
 
