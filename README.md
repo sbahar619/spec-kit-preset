@@ -51,10 +51,14 @@ cp "$P/memory/"*.md .specify/memory/
 
 ### Step 2 — `/speckit-constitution` (required)
 
+Copy-paste as-is in the target repo:
+
 ```text
-Adopt spec-kit-preset constitution (Version from the template). Project name: <your-project>.
-Fill all placeholders, set ratification/amended dates, and sync dependent templates
-(plan, spec, tasks) with the constitution.
+Finalize .specify/memory/constitution.md from the spec-kit-preset seed.
+Use this repository's name as the project name.
+Set ratification and last-amended dates to today.
+Keep the Version line unless governance changed.
+Sync plan, spec, and tasks templates under .specify/templates/ with the constitution.
 ```
 
 ### Step 3 — First feature
