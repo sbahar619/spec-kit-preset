@@ -151,5 +151,3 @@ Generated `tasks.md` MUST include:
 | Matrix add without audit | Redundant subtests |
 
 If a combined IB landed, revert out-of-scope portions, mark the dedicated IB pending, re-apply in the correct IB.
-
-**Version**: 1.4.0 | **Companion to constitution**: 1.6.0+

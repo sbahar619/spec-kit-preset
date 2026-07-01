@@ -4,8 +4,6 @@
 
 **Authority**: Companion to constitution **Development Workflow**. Seeded to `.specify/memory/` in consumer projects.
 
-**Version**: 1.3.0
-
 ---
 
 ## Stack and naming
@@ -37,5 +35,3 @@ If `main` moved while the stack was open, rebase the tip branch onto `main` once
 When the user mentions IB branches or stacked PRs: read this file, acknowledge the workflow, do not re-explain it. **Do not** run mutating git, commit, push, or open PRs unless explicitly asked.
 
 Conflict recovery is user-operational — see `docs/git-troubleshooting.md` (not part of the preset).
-
-**Version**: 1.3.0 | **Companion to**: constitution 1.6.2+, implementation-batches 1.4.0+

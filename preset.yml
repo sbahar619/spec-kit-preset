@@ -1,0 +1,26 @@
+schema_version: "1.0"
+
+preset:
+  id: "spec-kit-preset"
+  name: "Spec Kit Preset"
+  version: "1.0.0"
+  description: "Constitution, IB batch guidance, and stacked git workflow for Spec Kit projects"
+  author: "sbahar619"
+  repository: "https://github.com/sbahar619/spec-kit-preset"
+  license: "MIT"
+
+requires:
+  speckit_version: ">=0.6.0"
+
+provides:
+  templates:
+    - type: "template"
+      name: "constitution-template"
+      file: "templates/constitution-template.md"
+      description: "Project constitution with coding standards and IB workflow MUSTs"
+      replaces: "constitution-template"
+
+tags:
+  - "constitution"
+  - "implementation-batches"
+  - "spec-kit"

@@ -2,9 +2,7 @@
 
 **Purpose**: Playbook when stacked IB git goes wrong. User-operational — **not** part of the preset; not seeded to `.specify/memory/`.
 
-**Companion to**: `../git-workflow.md` (agent-ack workflow at preset root).
-
-**Version**: 1.0.0
+**Companion to**: `../memory/git-workflow.md` (agent-ack workflow).
 
 ---
 
@@ -45,5 +43,3 @@ After partial merge to `main`: rebase the next unmerged branch onto `main`, not 
 git checkout 001/ib02-resourcemanagers-test-consistency
 git rebase main
 ```
-
-**Version**: 1.0.0

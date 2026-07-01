@@ -2,30 +2,34 @@
 
 Shared Spec Kit constitution and IB batch guidance for reuse across projects.
 
+[Spec Kit preset](https://github.github.io/spec-kit/reference/presets.html): `preset.yml` + templates + memory companions.
+
 Preset path (adjust if yours differs): `/home/fedora/spec-kit-preset`
 
-## Sources
+## Layout
 
-**Constitution** (`constitution.md`) — core coding principles (Minimal Change, Simplicity, Testing, Validation, etc.) are derived from the coding-standard rules in [sbahar619/ai-agent-config](https://github.com/sbahar619/ai-agent-config). When those rules change upstream, refresh the constitution here and bump its version before rolling out to projects.
+| Path | Seeded? | Role |
+|------|---------|------|
+| `preset.yml` | — | Preset manifest; overrides core `constitution-template` |
+| `templates/constitution-template.md` | yes | Governance MUSTs |
+| `memory/implementation-batches.md` | yes | IB rules HOW |
+| `memory/git-workflow.md` | yes | Stacked IB git workflow (agents ack only) |
+| `docs/git-troubleshooting.md` | no | User ops when stacked git breaks |
 
-**Implementation batches** (`implementation-batches.md`) — Spec Kit–specific IB workflow; not sourced from ai-agent-config. Evolves in this repo only.
+Constitution principles derive from [sbahar619/ai-agent-config](https://github.com/sbahar619/ai-agent-config). IB and git workflow evolve in this repo only.
 
-**Git workflow** (`git-workflow.md`) — stacked IB branches, tip-only merge; agent ack. Seeded to consumer projects.
+## Versions (what to bump)
 
-**Git troubleshooting** (`docs/git-troubleshooting.md`) — conflict recovery; user ops, not preset.
+| Required | When |
+|----------|------|
+| `preset.yml` — `schema_version`, `preset.version`, `requires.speckit_version` | Spec Kit CLI enforces on `preset add` |
+| `templates/constitution-template.md` — `**Version**` | `/speckit-constitution` reads and bumps it |
 
-## Files
-
-| File | Seeded to consumer? | Purpose |
-|------|---------------------|---------|
-| `constitution.md` | yes (via `/speckit-constitution`) | Core principles and workflow MUSTs (v1.6.2+) |
-| `implementation-batches.md` | yes (`cp`) | IB rules (v1.4.0+) |
-| `git-workflow.md` | yes (`cp`) | Agent-ack git workflow (v1.3.0+) |
-| `docs/` | no | User-operational notes (not part of preset) |
+Memory docs and `docs/` have no version fields — use git history for rollout tracking.
 
 ## New project init
 
-Run these steps **in the target repo** after cloning or creating the project.
+Run in the **target repo** after clone or create.
 
 ### Step 0 — Spec Kit scaffold
 
@@ -34,83 +38,47 @@ cd /path/to/your-project
 specify init . --force --integration cursor-agent
 ```
 
-Creates `.specify/`, `.cursor/skills/speckit-*`, and default templates.
-
-### Step 1 — Seed preset files
+### Step 1 — Install preset and copy memory files
 
 ```bash
-cp /home/fedora/spec-kit-preset/constitution.md .specify/memory/constitution.md
-cp /home/fedora/spec-kit-preset/implementation-batches.md .specify/memory/implementation-batches.md
-cp /home/fedora/spec-kit-preset/git-workflow.md .specify/memory/git-workflow.md
+specify preset add --dev /home/fedora/spec-kit-preset --priority 5
+P=.specify/presets/spec-kit-preset
+cp "$P/templates/constitution-template.md" .specify/memory/constitution.md
+cp "$P/memory/"*.md .specify/memory/
 ```
 
-`cp` copies content only. It does **not** fill project placeholders or sync templates.
+`cp` copies content only — not placeholders or template sync.
 
-### Step 2 — `/speckit-constitution` (required for constitution)
-
-In Cursor, run **`/speckit-constitution`** with a prompt like:
+### Step 2 — `/speckit-constitution` (required)
 
 ```text
-Adopt spec-kit-preset constitution v1.6.2. Project name: <your-project>.
+Adopt spec-kit-preset constitution (Version from the template). Project name: <your-project>.
 Fill all placeholders, set ratification/amended dates, and sync dependent templates
 (plan, spec, tasks) with the constitution.
 ```
 
-This step:
-
-- Replaces `[PROJECT_NAME]`, `[RATIFICATION_DATE]`, `[LAST_AMENDED_DATE]`
-- Aligns `.specify/templates/*` with constitution MUSTs
-- Writes a Sync Impact Report on the constitution file
-
-**Do not skip** Step 2 if you only `cp` constitution — placeholders and templates will drift.
-
 ### Step 3 — First feature
-
-Use the normal Spec Kit flow in the project:
 
 ```text
 /speckit-specify → /speckit-plan → /speckit-tasks → /speckit-analyze → /speckit-implement
 ```
 
-Feature folders under `specs/` are project-local; they are not copied from this preset.
+## Update an existing project
 
----
-
-## Update an existing project (preset rollout)
-
-1. Change files **here** first; bump version in the edited preset file.
-2. In the target project:
-   - **`implementation-batches.md`**, **`git-workflow.md`**: `cp` from preset → `.specify/memory/`.
-   - **`constitution.md`**: run **`/speckit-constitution`** with the new preset version in the prompt (merge/update — avoid blind overwrite if the project has local governance edits).
-3. Do **not** hand-edit project skills or existing `specs/*` folders as part of preset rollout.
-
----
-
-## `cp` vs `/speckit-constitution`
-
-| Artifact | `cp` | `/speckit-constitution` |
-|----------|------|-------------------------|
-| `constitution.md` | Seed content | **Required** — placeholders + template sync |
-| `implementation-batches.md` | **Required** — only delivery path today | Not handled (future: init hook) |
-| `git-workflow.md` | **Required** — only delivery path today | Not handled |
-
----
+1. Edit files here (see **Edit the base**); bump constitution `**Version**` or `preset.version` when applicable.
+2. In the target project: **re-run Step 1** from above.
+3. Run **`/speckit-constitution`** for constitution changes (merge/update — avoid blind overwrite if the project has local governance edits).
+4. Do **not** hand-edit project skills or existing `specs/*` as part of preset rollout.
 
 ## Edit the base (this repo)
 
-1. **Principles changed in [ai-agent-config](https://github.com/sbahar619/ai-agent-config)?** Update `constitution.md` to match, then bump its version.
-2. **IB / task workflow changed?** Update `implementation-batches.md` and bump its version.
-3. **Stacked-branch workflow changed?** Update `git-workflow.md` and bump its version.
-4. **Git conflict playbook changed?** Update `docs/git-troubleshooting.md` and bump its version.
-5. Roll out to projects per **Update an existing project** above.
+| Change | File | Bump |
+|--------|------|------|
+| Principles / coding standards | `templates/constitution-template.md` | constitution `**Version**` |
+| IB / tasks / implement workflow | `memory/implementation-batches.md` | — |
+| Stacked-branch workflow | `memory/git-workflow.md` | — |
+| Git conflict playbook | `docs/git-troubleshooting.md` | — |
+| Preset manifest or layout | `preset.yml` | `preset.version` |
+| Init or rollout steps | `README.md` | — |
 
-## Companion docs
-
-| Document | Seeded? | Level |
-|----------|---------|--------|
-| **constitution** | yes | MUST — review-sized IBs, in-scope call sites, concern separation |
-| **implementation-batches** | yes | HOW — consumer inventory, wiring completeness, matrix-audit |
-| **git-workflow** | yes | HOW — branch naming, stack, tip-only merge; agents ack only |
-| **docs/git-troubleshooting** | no | User ops — not part of preset |
-
-Keep IB rules in `implementation-batches.md` and agent git context in `git-workflow.md`.
+Do **not** add project-specific specs, skills, or `.specify/` trees here.
