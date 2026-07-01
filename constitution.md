@@ -111,6 +111,10 @@ run them locally unless there is an explicit, task-specific reason to do so.
 - Detailed batch rules (consumer inventory, wiring completeness, matrix-audit) live
   in `implementation-batches.md` (companion to this constitution); projects SHOULD
   copy it into `.specify/memory/` or `.specify/templates/`.
+- Stacked IB git workflow (branch naming, stack order, tip-only merge) lives in
+  `git-workflow.md` (companion to this constitution); projects SHOULD copy it into
+  `.specify/memory/`. Coding agents SHOULD acknowledge that workflow without running
+  git unless the user explicitly requests it.
 
 ## Governance
 
@@ -120,4 +124,4 @@ version bump, and sync of dependent templates. All plans and reviews MUST verify
 compliance with MUST principles. Complexity that violates minimal-change or
 simplicity principles MUST be documented with rejected simpler alternatives.
 
-**Version**: 1.6.0 | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
+**Version**: 1.6.2 | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]

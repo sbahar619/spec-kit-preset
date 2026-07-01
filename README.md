@@ -10,12 +10,18 @@ Preset path (adjust if yours differs): `/home/fedora/spec-kit-preset`
 
 **Implementation batches** (`implementation-batches.md`) — Spec Kit–specific IB workflow; not sourced from ai-agent-config. Evolves in this repo only.
 
+**Git workflow** (`git-workflow.md`) — stacked IB branches, tip-only merge; agent ack. Seeded to consumer projects.
+
+**Git troubleshooting** (`docs/git-troubleshooting.md`) — conflict recovery; user ops, not preset.
+
 ## Files
 
-| File | Purpose |
-|------|---------|
-| `constitution.md` | Core principles and workflow MUSTs (v1.6.0+) |
-| `implementation-batches.md` | IB rules — separation, wiring completeness, matrix-audit (v1.4.0+) |
+| File | Seeded to consumer? | Purpose |
+|------|---------------------|---------|
+| `constitution.md` | yes (via `/speckit-constitution`) | Core principles and workflow MUSTs (v1.6.2+) |
+| `implementation-batches.md` | yes (`cp`) | IB rules (v1.4.0+) |
+| `git-workflow.md` | yes (`cp`) | Agent-ack git workflow (v1.3.0+) |
+| `docs/` | no | User-operational notes (not part of preset) |
 
 ## New project init
 
@@ -35,6 +41,7 @@ Creates `.specify/`, `.cursor/skills/speckit-*`, and default templates.
 ```bash
 cp /home/fedora/spec-kit-preset/constitution.md .specify/memory/constitution.md
 cp /home/fedora/spec-kit-preset/implementation-batches.md .specify/memory/implementation-batches.md
+cp /home/fedora/spec-kit-preset/git-workflow.md .specify/memory/git-workflow.md
 ```
 
 `cp` copies content only. It does **not** fill project placeholders or sync templates.
@@ -44,7 +51,7 @@ cp /home/fedora/spec-kit-preset/implementation-batches.md .specify/memory/implem
 In Cursor, run **`/speckit-constitution`** with a prompt like:
 
 ```text
-Adopt spec-kit-preset constitution v1.6.0. Project name: <your-project>.
+Adopt spec-kit-preset constitution v1.6.2. Project name: <your-project>.
 Fill all placeholders, set ratification/amended dates, and sync dependent templates
 (plan, spec, tasks) with the constitution.
 ```
@@ -73,7 +80,7 @@ Feature folders under `specs/` are project-local; they are not copied from this 
 
 1. Change files **here** first; bump version in the edited preset file.
 2. In the target project:
-   - **`implementation-batches.md`**: `cp` from preset → `.specify/memory/` (no slash command yet).
+   - **`implementation-batches.md`**, **`git-workflow.md`**: `cp` from preset → `.specify/memory/`.
    - **`constitution.md`**: run **`/speckit-constitution`** with the new preset version in the prompt (merge/update — avoid blind overwrite if the project has local governance edits).
 3. Do **not** hand-edit project skills or existing `specs/*` folders as part of preset rollout.
 
@@ -85,6 +92,7 @@ Feature folders under `specs/` are project-local; they are not copied from this 
 |----------|------|-------------------------|
 | `constitution.md` | Seed content | **Required** — placeholders + template sync |
 | `implementation-batches.md` | **Required** — only delivery path today | Not handled (future: init hook) |
+| `git-workflow.md` | **Required** — only delivery path today | Not handled |
 
 ---
 
@@ -92,13 +100,17 @@ Feature folders under `specs/` are project-local; they are not copied from this 
 
 1. **Principles changed in [ai-agent-config](https://github.com/sbahar619/ai-agent-config)?** Update `constitution.md` to match, then bump its version.
 2. **IB / task workflow changed?** Update `implementation-batches.md` and bump its version.
-3. Roll out to projects per **Update an existing project** above.
+3. **Stacked-branch workflow changed?** Update `git-workflow.md` and bump its version.
+4. **Git conflict playbook changed?** Update `docs/git-troubleshooting.md` and bump its version.
+5. Roll out to projects per **Update an existing project** above.
 
-## Constitution vs implementation-batches
+## Companion docs
 
-| Document | Level |
-|----------|--------|
-| **constitution** | MUST — review-sized IBs, in-scope call sites, concern separation, analyze before implement |
-| **implementation-batches** | HOW — consumer inventory, wiring completeness, horizontal IB, matrix-audit, Done when |
+| Document | Seeded? | Level |
+|----------|---------|--------|
+| **constitution** | yes | MUST — review-sized IBs, in-scope call sites, concern separation |
+| **implementation-batches** | yes | HOW — consumer inventory, wiring completeness, matrix-audit |
+| **git-workflow** | yes | HOW — branch naming, stack, tip-only merge; agents ack only |
+| **docs/git-troubleshooting** | no | User ops — not part of preset |
 
-Keep detailed IB rules in `implementation-batches.md`; the constitution references that companion doc.
+Keep IB rules in `implementation-batches.md` and agent git context in `git-workflow.md`.
