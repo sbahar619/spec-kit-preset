@@ -64,7 +64,7 @@ Sync plan, spec, and tasks templates under .specify/templates/ with the constitu
 ### Step 3 — First feature
 
 ```text
-/speckit-specify → /speckit-plan → /speckit-tasks → /speckit-analyze → /speckit-implement
+/speckit-specify → /speckit-clarify → /speckit-plan → /speckit-tasks → /speckit-analyze → /speckit-implement
 ```
 
 ## Update an existing project
