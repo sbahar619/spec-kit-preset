@@ -6,15 +6,28 @@
 
 ---
 
-## Batch kinds
+## IB sequence
 
-| Kind | ID pattern | Produces code diff? | Use |
-|------|------------|---------------------|-----|
-| **Preflight** | P1, P2, … | No | Baseline, verify green — once before IB01 |
+An **IB sequence** is the full unit of delivery: Preflight → IB01…IBn → Postflight.
+Preflight and Postflight are mandatory gates — not optional follow-on work.
+
+```
+Preflight  →  IB01 → IB02 → … → IBn  →  Postflight
+  (open)           delivery batches          (close)
+```
+
+**Preflight is the mandatory open** — do not start IB01 until all Preflight gates pass.
+**Postflight is the mandatory close** — the sequence is not complete until all Postflight gates pass.
+
+### Phase reference
+
+| Phase | ID pattern | Produces code diff? | Role |
+|-------|------------|---------------------|------|
+| **Preflight** | P1, P2, … | No | Baseline, verify green — once, before IB01 |
 | **Implementation batch** | IB01, IB02, … | **Always yes** | One `/speckit-implement` request per IB |
-| **Postflight** | PF1, PF2, … | No | Full validation — once after last IB |
+| **Postflight** | PF1, PF2, … | No | Full validation — once, after last IB |
 
-Do **not** label preflight/postflight as IB. Validation-only work belongs in postflight unless paired with code in the same feature.
+Do **not** label Preflight/Postflight as IB. Validation-only work belongs in Postflight unless paired with code in the same feature.
 
 ---
 
