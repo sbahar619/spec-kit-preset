@@ -1,6 +1,6 @@
 # spec-kit-preset
 
-Shared Spec Kit constitution and IB batch guidance for reuse across projects.
+Shared Spec Kit constitution and Implementation Batch (IB) guidance for reuse across projects.
 
 [Spec Kit preset](https://github.github.io/spec-kit/reference/presets.html): `preset.yml` + templates + memory companions.
 
@@ -16,7 +16,7 @@ export SPEC_KIT_PRESET_PATH=/home/fedora/spec-kit-preset
 |------|---------|------|
 | `preset.yml` | — | Preset manifest; overrides core `constitution-template` |
 | `templates/constitution-template.md` | yes | Governance MUSTs |
-| `memory/implementation-batches.md` | yes | IB rules HOW |
+| `memory/implementation-batches.md` | yes | Implementation Batch (IB) rules — HOW |
 | `memory/git-workflow.md` | yes | Stacked IB git workflow (agents ack only) |
 | `docs/git-troubleshooting.md` | no | User ops when stacked git breaks |
 
