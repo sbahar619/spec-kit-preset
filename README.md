@@ -4,7 +4,11 @@ Shared Spec Kit constitution and IB batch guidance for reuse across projects.
 
 [Spec Kit preset](https://github.github.io/spec-kit/reference/presets.html): `preset.yml` + templates + memory companions.
 
-Preset path (adjust if yours differs): `/home/fedora/spec-kit-preset`
+Preset path: set `SPEC_KIT_PRESET_PATH` to wherever you cloned this repo, e.g.
+
+```bash
+export SPEC_KIT_PRESET_PATH=/home/fedora/spec-kit-preset
+```
 
 ## Layout
 
@@ -32,7 +36,7 @@ specify init . --force --integration cursor-agent
 ### Step 1 — Install preset and copy memory files
 
 ```bash
-specify preset add --dev /home/fedora/spec-kit-preset --priority 5
+specify preset add --dev "$SPEC_KIT_PRESET_PATH" --priority 5
 P=.specify/presets/spec-kit-preset
 cp "$P/templates/constitution-template.md" .specify/memory/constitution.md
 cp "$P/memory/"*.md .specify/memory/
