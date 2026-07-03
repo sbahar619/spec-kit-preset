@@ -18,15 +18,6 @@ Preset path (adjust if yours differs): `/home/fedora/spec-kit-preset`
 
 Constitution principles derive from [sbahar619/ai-agent-config](https://github.com/sbahar619/ai-agent-config). IB and git workflow evolve in this repo only.
 
-## Versions (what to bump)
-
-| Required | When |
-|----------|------|
-| `preset.yml` — `schema_version`, `preset.version`, `requires.speckit_version` | Spec Kit CLI enforces on `preset add` |
-| `templates/constitution-template.md` — `**Version**` | `/speckit-constitution` reads and bumps it |
-
-Memory docs and `docs/` have no version fields — use git history for rollout tracking.
-
 ## New project init
 
 Run in the **target repo** after clone or create.
@@ -76,13 +67,15 @@ Sync plan, spec, and tasks templates under .specify/templates/ with the constitu
 
 ## Edit the base (this repo)
 
-| Change | File | Bump |
-|--------|------|------|
-| Principles / coding standards | `templates/constitution-template.md` | constitution `**Version**` |
-| IB / tasks / implement workflow | `memory/implementation-batches.md` | — |
-| Stacked-branch workflow | `memory/git-workflow.md` | — |
-| Git conflict playbook | `docs/git-troubleshooting.md` | — |
-| Preset manifest or layout | `preset.yml` | `preset.version` |
-| Init or rollout steps | `README.md` | — |
+| Change | File | Bump | Field |
+|--------|------|------|-------|
+| Principles / coding standards | `templates/constitution-template.md` | constitution `**Version**` | `**Version**` line — `/speckit-constitution` reads and bumps it |
+| Preset manifest or layout | `preset.yml` | `preset.version` | `schema_version`, `preset.version`, `requires.speckit_version` — Spec Kit CLI enforces on `preset add` |
+| IB / tasks / implement workflow | `memory/implementation-batches.md` | — | — |
+| Stacked-branch workflow | `memory/git-workflow.md` | — | — |
+| Git conflict playbook | `docs/git-troubleshooting.md` | — | — |
+| Init or rollout steps | `README.md` | — | — |
+
+Memory docs and `docs/` have no version fields — use git history for rollout tracking.
 
 Do **not** add project-specific specs, skills, or `.specify/` trees here.
