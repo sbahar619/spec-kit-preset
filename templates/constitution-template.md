@@ -99,13 +99,9 @@ run them locally unless there is an explicit, task-specific reason to do so.
   also update every **in-scope** call site in the same diff. Do not land definitions
   without consumers in the same batch. Partial wiring (one consumer while others
   remain on the old pattern) is forbidden unless tasks explicitly scope a single file.
-- Behavior-preserving work MUST be split by concern when multiple apply to the same
-  files: **naming** (labels only), **wiring** (helpers, dedup, assertions — no renames),
-  and **coverage** (new tests/scenarios). When both naming and wiring touch a file,
-  **naming IBs come before wiring IBs**. Behavior-adding work (new tests, new features)
-  MUST be in separate IBs from wiring when both touch the same files; wiring IBs come
-  before coverage IBs. One `/speckit-implement` request MUST target one IB and one
-  concern only.
+- Work MUST be split into implementation batches by concern to preserve
+  reviewability and testability. See `implementation-batches.md` for batch
+  definitions and ordering.
 - Spec Kit workflow SHOULD run `/speckit-analyze` after `/speckit-tasks` and before
   the first `/speckit-implement` to catch IB scope, wiring completeness, and concern-mixing issues.
 - Detailed batch rules (consumer inventory, wiring completeness, matrix-audit) live
@@ -124,4 +120,4 @@ version bump, and sync of dependent templates. All plans and reviews MUST verify
 compliance with MUST principles. Complexity that violates minimal-change or
 simplicity principles MUST be documented with rejected simpler alternatives.
 
-**Version**: 1.6.3 | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
+**Version**: 1.6.4 | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
