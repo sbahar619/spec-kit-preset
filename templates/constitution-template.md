@@ -29,7 +29,7 @@ duplicate logic, bypass abstractions, or reach into unrelated internals.
 Before hardcoding enums, formats, limits, or well-known strings, check stdlib
 and existing dependencies for exported constants.
 
-### V. Test-First (Preferred)
+### V. Test-First (Default)
 
 TDD is the default for project-owned logic that introduces or changes behavior:
 write the test first, confirm it fails for the right reason, then implement until
@@ -124,4 +124,4 @@ version bump, and sync of dependent templates. All plans and reviews MUST verify
 compliance with MUST principles. Complexity that violates minimal-change or
 simplicity principles MUST be documented with rejected simpler alternatives.
 
-**Version**: 1.6.2 | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
+**Version**: 1.6.3 | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
