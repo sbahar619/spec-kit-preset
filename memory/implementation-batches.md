@@ -60,6 +60,10 @@ If an IB **adds**, **moves**, **renames**, or **changes the signature** of a fun
 
 Each IB = **one concern**, one review question, one commit. User story labels ([US1]–[US3]) tag tasks inside IBs; IBs are the review axis.
 
+When multiple concerns apply to the same files, behavior-preserving work **MUST** split into
+separate IBs — one concern per batch. Behavior-adding work (new tests, new features) **MUST**
+stay out of wiring IBs when both touch those files.
+
 | Concern | Changes | Must NOT change |
 |---------|---------|-----------------|
 | **Foundation** | Shared fixtures/helpers (≥2 consumers); wiring in inventory | Names, assertion style, single-consumer helpers in support file |
