@@ -116,9 +116,9 @@ Add tests only for a **distinct scenario contract** (preconditions + outcome) �
 Generated `tasks.md` MUST include:
 
 1. **How to use** — Preflight / IB / Postflight; wiring + separation rules (brief)
-2. **Implementation Batches table** — IB | Concern (test-refactor labels when applicable) | Review theme | Consumer inventory (summary)
+2. **Implementation Batches table** — IB | Concern (test-refactor labels when applicable) | Review theme | Consumer inventory (summary per **Complete wiring**)
 3. **Progress** — status; `Next: IBxx` (recommended)
-4. **Per-IB blocks** — Define, Consumer inventory, Wiring, Out of scope, Done when
+4. **Per-IB blocks** — Define, Consumer inventory, Wiring, Out of scope, Done when (inventory and Done when per **Complete wiring**)
 5. **Dependencies** — test-refactor concern order when applicable; removal before coverage when applicable
 6. **`/speckit-implement` prompts** — one IB per request
 7. **Gates** in quickstart.md when applicable
@@ -149,7 +149,7 @@ Generated `tasks.md` MUST include:
 ### Generation checklist (`/speckit-tasks`)
 
 - [ ] Every IB produces a code diff (except preflight/postflight)
-- [ ] Func-def + complete consumer inventory on wiring/foundation IBs
+- [ ] Wiring/foundation IBs meet **Complete wiring** (consumer inventory + same diff)
 - [ ] One concern per IB; test-refactor separation order when applicable
 - [ ] Relocation = move + all importers + remove old defs
 - [ ] Coverage: matrix-audit; no blind adds; no mix with naming/wiring/removal
@@ -162,7 +162,7 @@ Generated `tasks.md` MUST include:
 
 **`/speckit-implement IBxx`**: Complete only that IB; verify inventory + separation; run tests/gates; stop for review; mark `[X]` only after gates pass.
 
-**`/speckit-analyze`** (before first implement): Flag **CRITICAL** for defs without in-scope call sites, missing Consumer inventory/Done when, concern mixing, or coverage adds without audit.
+**`/speckit-analyze`** (before first implement): Flag **CRITICAL** for defs without in-scope call sites, missing Consumer inventory or Done when (per **Complete wiring**), concern mixing, or coverage adds without audit.
 
 **Revert / recovery**: If a combined IB landed or work must be rolled back, revert out-of-scope portions; uncheck affected IB tasks and set their status to `pending` in `tasks.md`; re-apply in the correct IB.
 
