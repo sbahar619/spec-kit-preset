@@ -102,6 +102,11 @@ run them locally unless there is an explicit, task-specific reason to do so.
 - Work MUST be split into implementation batches by concern to preserve
   reviewability and testability. See `implementation-batches.md` for batch
   definitions and ordering.
+- If an IB spans more than one Feature Requirement **and** the changes involve
+  different reviewer mental models (structural refactoring, mechanical safety
+  fixes, naming/decomposition), split into separate IBs — one per distinct
+  concern. Uniform mirror changes across symmetric files may share one IB
+  (horizontal IB pattern).
 - Spec Kit workflow SHOULD run `/speckit-analyze` after `/speckit-tasks` and before
   the first `/speckit-implement` to catch IB scope, wiring completeness, and concern-mixing issues.
 - Detailed batch rules (consumer inventory, wiring completeness, matrix-audit) live
@@ -120,4 +125,4 @@ version bump, and sync of dependent templates. All plans and reviews MUST verify
 compliance with MUST principles. Complexity that violates minimal-change or
 simplicity principles MUST be documented with rejected simpler alternatives.
 
-**Version**: 1.6.4 | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
+**Version**: 1.6.5 | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]

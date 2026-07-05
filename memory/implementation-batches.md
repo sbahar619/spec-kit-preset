@@ -55,6 +55,31 @@ Applies to **any** function or symbol IB — production code, helpers, and tests
 
 ---
 
+## IB splitting — multi-FR / mental-model check
+
+An IB that references more than one Feature Requirement (FR) MUST also pass a
+mental-model check: if the changes for those FRs require **different reviewer
+skills**, split into separate IBs — one per distinct concern.
+
+Mental-model categories (not exhaustive):
+
+| Category | Examples |
+|----------|----------|
+| **Structural** | Extract method, introduce abstraction, relocate block |
+| **Mechanical / safety** | Add `.DeepCopy()`, nil guard, error wrap |
+| **Naming / decomposition** | Rename variable, move inline literal to helper |
+
+**Exception — mirror changes**: Uniform changes across symmetric files (e.g.
+"add `.DeepCopy()` in all four managers") may share one IB because a single
+reviewer pass covers all of them — this is the **Horizontal IB** pattern applied
+to safety or mechanical fixes.
+
+**Guidance for `/speckit-tasks`**: When assigning tasks to IBs, check whether any
+IB spans more than one FR **and** more than one mental-model category above. If
+so, split it, even when individual changes are small.
+
+---
+
 ## Separation of concerns (test-suite refactor)
 
 The **Foundation / Naming / Wiring / Coverage** taxonomy applies to **test-suite refactors**
@@ -151,6 +176,7 @@ Generated `tasks.md` MUST include:
 - [ ] Every IB produces a code diff (except preflight/postflight)
 - [ ] Wiring/foundation IBs meet **Complete wiring** (consumer inventory + same diff)
 - [ ] One concern per IB; test-refactor separation order when applicable
+- [ ] Multi-FR IBs: no single IB spans more than one mental-model category (structural / safety / naming); split when it does — mirror-change exception applies
 - [ ] Relocation = move + all importers + remove old defs
 - [ ] Coverage: matrix-audit; no blind adds; no mix with naming/wiring/removal
 - [ ] Recommend `/speckit-analyze` after tasks, before first implement
@@ -178,3 +204,4 @@ Generated `tasks.md` MUST include:
 | Wiring + new subtests | Concern mix |
 | Removals + adds | Concern mix |
 | Matrix add without audit (test coverage) | Redundant subtests |
+| Multi-FR + mixed mental models | Concern mix — reviewer must context-switch |
