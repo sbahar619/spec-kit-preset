@@ -53,8 +53,6 @@ Applies to **any** function or symbol IB — production code, helpers, and tests
 
 **Horizontal IB**: When a concern is uniform package-wide (shared client, uniform helper/symbol replacement), one IB MAY touch many files if concern is single, inventory lists every file, and Done when requires all in diff.
 
-**Progress**: On revert, uncheck IB tasks and set status `pending` in `tasks.md`.
-
 ---
 
 ## Separation of concerns (test-suite refactor)
@@ -166,6 +164,8 @@ Generated `tasks.md` MUST include:
 
 **`/speckit-analyze`** (before first implement): Flag **CRITICAL** for defs without in-scope call sites, missing Consumer inventory/Done when, concern mixing, or coverage adds without audit.
 
+**Revert / recovery**: If a combined IB landed or work must be rolled back, revert out-of-scope portions; uncheck affected IB tasks and set their status to `pending` in `tasks.md`; re-apply in the correct IB.
+
 ---
 
 ## Anti-patterns
@@ -178,5 +178,3 @@ Generated `tasks.md` MUST include:
 | Wiring + new subtests | Concern mix |
 | Removals + adds | Concern mix |
 | Matrix add without audit (test coverage) | Redundant subtests |
-
-If a combined IB landed, revert out-of-scope portions, mark the dedicated IB pending, re-apply in the correct IB.
