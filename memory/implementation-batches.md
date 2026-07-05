@@ -71,23 +71,25 @@ stay out of wiring IBs when both touch those files.
 | **Wiring** | Helper adoption, dedup, assertion/setup standardization | Outer/subtest names |
 | **Coverage** | New scenarios/subtests (US3) | Renames, wiring, unrelated refactors |
 
-**Order per file** (when multiple apply):
+**Concern order** (canonical — package and per-file):
 
 ```text
-Foundation → Naming → Wiring → Coverage
+Foundation → Wiring → Naming → Coverage
 ```
+
+Wiring before Naming: package-wide helper/symbol adoption (horizontal IB) lands before rename passes so consumers are on the new pattern first. Per-file Wiring IBs follow the same order when a file still needs both.
 
 Never combine **Naming + Wiring**, **Wiring + Coverage**, or **removals + adds** in one IB. Run removal/anti-redundancy IBs before coverage adds when both apply.
 
 **File scope**: Default one primary file (~30–150 lines). Multi-file only for atomic relocation or horizontal IB (inventory required). Within one concern, do not split wrapper dedup vs finalizer dedup; do split naming vs wiring vs coverage.
 
-**Typical sequence**: IB01 package-wide wiring → IB02 naming → IB03 relocation (if not in IB01) → IB04+ per-file gaps. Adjust numbering; keep concern order.
+**Typical sequence**: IB01 Foundation or package-wide Wiring → IB02 Naming → IB03 relocation (if not in IB01) → IB04+ per-file Wiring/Coverage gaps. Adjust numbering; keep concern order above.
 
 | Spec priority | Typical IBs |
 |---------------|-------------|
 | P1 — layout, naming | Naming |
 | P2 — fixtures, dedup | Foundation + Wiring |
-| P3 — coverage gaps | Coverage (after Naming + Wiring for same file) |
+| P3 — coverage gaps | Coverage (after Wiring + Naming for same file) |
 
 ---
 
