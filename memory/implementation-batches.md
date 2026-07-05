@@ -46,17 +46,23 @@ If an IB **adds**, **moves**, **renames**, or **changes the signature** of a fun
 |--------|----------------------|
 | New/moved helper | All consumers in inventory |
 | Rename / signature change | Every reference updated |
-| `Test*` / subtest rename | No in-package call sites (test runner) |
+
+Applies to **any** function or symbol IB — production code, helpers, and tests alike.
 
 **Do not**: defs-only; wire one file while others stay on the old pattern; split define vs use across IBs unless all consumers are in the define IB.
 
-**Horizontal IB**: When a concern is uniform package-wide (shared client, naming vocabulary), one IB MAY touch many files if concern is single, inventory lists every file, and Done when requires all in diff.
+**Horizontal IB**: When a concern is uniform package-wide (shared client, uniform helper/symbol replacement), one IB MAY touch many files if concern is single, inventory lists every file, and Done when requires all in diff.
 
 **Progress**: On revert, uncheck IB tasks and set status `pending` in `tasks.md`.
 
 ---
 
-## Separation of concerns
+## Separation of concerns (test-suite refactor)
+
+The **Foundation / Naming / Wiring / Coverage** taxonomy applies to **test-suite refactors**
+— shared fixtures, `Test*` layout, helper dedup, and scenario coverage. Other feature work
+MUST still use one concern per IB and **Complete wiring** above; pick concern labels that
+match the work (e.g. schema migration, API surface) rather than forcing these four names.
 
 Each IB = **one concern**, one review question, one commit. User story labels ([US1]–[US3]) tag tasks inside IBs; IBs are the review axis.
 
@@ -70,6 +76,10 @@ stay out of wiring IBs when both touch those files.
 | **Naming** | Outer `Test*` + subtest vocabulary | Helpers, wiring, assertions, logic |
 | **Wiring** | Helper adoption, dedup, assertion/setup standardization | Outer/subtest names |
 | **Coverage** | New scenarios/subtests (US3) | Renames, wiring, unrelated refactors |
+
+**Naming exception**: `Test*` and subtest renames have no in-package call sites (the test
+runner invokes by name). Complete wiring does not apply to those symbols — only to helpers
+and production code they reference.
 
 **Concern order** (canonical — package and per-file):
 
@@ -93,7 +103,7 @@ Never combine **Naming + Wiring**, **Wiring + Coverage**, or **removals + adds**
 
 ---
 
-## Coverage IBs (scenario-contract)
+## Coverage IBs (test-suite — scenario-contract)
 
 Add tests only for a **distinct scenario contract** (preconditions + outcome) — not matrix symmetry or coverage % alone.
 
@@ -108,10 +118,10 @@ Add tests only for a **distinct scenario contract** (preconditions + outcome) �
 Generated `tasks.md` MUST include:
 
 1. **How to use** — Preflight / IB / Postflight; wiring + separation rules (brief)
-2. **Implementation Batches table** — IB | Concern | Review theme | Consumer inventory (summary)
+2. **Implementation Batches table** — IB | Concern (test-refactor labels when applicable) | Review theme | Consumer inventory (summary)
 3. **Progress** — status; `Next: IBxx` (recommended)
 4. **Per-IB blocks** — Define, Consumer inventory, Wiring, Out of scope, Done when
-5. **Dependencies** — concern order; removal before coverage when applicable
+5. **Dependencies** — test-refactor concern order when applicable; removal before coverage when applicable
 6. **`/speckit-implement` prompts** — one IB per request
 7. **Gates** in quickstart.md when applicable
 8. **IB Traceability table** — one row per IB with markdown links to `spec.md` anchors:
@@ -142,7 +152,7 @@ Generated `tasks.md` MUST include:
 
 - [ ] Every IB produces a code diff (except preflight/postflight)
 - [ ] Func-def + complete consumer inventory on wiring/foundation IBs
-- [ ] One concern per IB; separation order respected
+- [ ] One concern per IB; test-refactor separation order when applicable
 - [ ] Relocation = move + all importers + remove old defs
 - [ ] Coverage: matrix-audit; no blind adds; no mix with naming/wiring/removal
 - [ ] Recommend `/speckit-analyze` after tasks, before first implement
@@ -167,6 +177,6 @@ Generated `tasks.md` MUST include:
 | Wiring + renames | Concern mix |
 | Wiring + new subtests | Concern mix |
 | Removals + adds | Concern mix |
-| Matrix add without audit | Redundant subtests |
+| Matrix add without audit (test coverage) | Redundant subtests |
 
 If a combined IB landed, revert out-of-scope portions, mark the dedicated IB pending, re-apply in the correct IB.
